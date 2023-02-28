@@ -4,9 +4,11 @@ import MainContainer from "./components/MainContainer";
 import RootLayout from "./components/pages/Root";
 import CreateContainer from "./components/CreateContainer";
 import { AnimatePresence } from "framer-motion";
-import { StateProvider } from "./context/StateProvider";
+import { StateProvider, useStateValue } from "./context/StateProvider";
 import { initialState } from "./context/initialState";
-import reducer from "./context/reducer";
+import reducer, { actionType } from "./context/reducer";
+import { getFoodItems } from "./Utils/firebasefunctions";
+import { useEffect, useState } from "react";
 
 const router = createBrowserRouter([
   {
@@ -18,7 +20,9 @@ const router = createBrowserRouter([
     ],
   },
 ]);
-function App() {
+const App = () => {
+  // const [{ foodItems }, dispatch] = useStateValue();
+
   return (
     <StateProvider initialState={initialState} reducer={reducer}>
       <AnimatePresence>
@@ -26,6 +30,6 @@ function App() {
       </AnimatePresence>
     </StateProvider>
   );
-}
+};
 
 export default App;
