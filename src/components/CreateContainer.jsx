@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
 import {
   MdFastfood,
   MdCloudUpload,
@@ -11,7 +16,7 @@ import {
 import { categories } from "../Utils/HeroData";
 import Loader from "./Loader";
 import { storage } from "../Firebase.config";
-import { upload } from "@testing-library/user-event/dist/upload";
+import { saveItem } from "../Utils/firebasefunctions";
 
 const CreateContainer = () => {
   const [title, setTitle] = useState("");
@@ -73,9 +78,73 @@ const CreateContainer = () => {
     );
   };
 
-  const deleteImage = () => {};
+  const deleteImage = () => {
+    setIsLoading(true);
+    const deleteRef = ref(storage, imageAsset);
 
-  const saveDetails = () => {};
+    deleteObject(deleteRef).then(() => {
+      setImageAsset(null);
+      setIsLoading(false);
+      setFields(true);
+      setMsg("Image deleted Successfully !!");
+      setAlertStatus("success");
+      setTimeout(() => {
+        setFields(false);
+      }, 4000);
+    });
+  };
+
+  const saveDetails = () => {
+    setIsLoading(true);
+    try {
+      if (!title || !category || !imageAsset || !calories || !price) {
+        setFields(true);
+        setMsg("Please fill all the required details.");
+        setAlertStatus("danger");
+        setTimeout(() => {
+          setFields(false);
+          setIsLoading(false);
+        }, 4000);
+      } else {
+        const data = {
+          id: `${Date.now()}`,
+          title: title,
+          imageUrl: imageAsset,
+          category,
+          calories,
+          qty: 1,
+          price,
+        };
+        saveItem(data);
+        setIsLoading(false);
+        setFields(true);
+        setMsg("Data Uploaded Successfully !!");
+        clearData();
+        setAlertStatus("success");
+
+        setTimeout(() => {
+          setFields(false);
+        }, 4000);
+      }
+    } catch (error) {
+      console.log(error);
+      setFields(true);
+      setMsg("Error while saving details. Please try again. ⚠️");
+      setAlertStatus("danger");
+      setTimeout(() => {
+        setFields(false);
+        setIsLoading(false);
+      }, 4000);
+    }
+  };
+
+  const clearData = () => {
+    setTitle("");
+    setImageAsset(null);
+    setCalories("");
+    setPrice("");
+    setCategory(null);
+  };
 
   return (
     <div className="w-full h-auto min-h-screen flex items-center justify-center ">
