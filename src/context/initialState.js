@@ -4,4 +4,5 @@ const userInfo = fetchData();
 
 export const initialState = {
   user: userInfo,
+  foodItems: null,
 };
